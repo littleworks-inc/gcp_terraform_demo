@@ -1,0 +1,33 @@
+name: 'Terraform-Apply'
+
+on: workflow_dispatch
+  
+#   workflow_run: 
+#    workflows: ["Terraform-Plan"]
+#    types:
+#     - completed
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        shell: bash
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+    
+    - name: Terraform Init
+      run: terraform init
+      env:
+        GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+      env:
+        GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}

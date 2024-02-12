@@ -1,0 +1,54 @@
+name: 'Terraform-Plan'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        shell: bash
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+#     - uses: actions/labeler@v2
+#       with:
+#         repo-token: ${{ secrets.GITHUB_TOKEN }}
+      
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        persist-credentials: false
+     
+    #- name: wait time
+    #  run: sleep 60
+#     - name: github configuration
+#       run : |
+#              git config --global credential.helper 'store --file ~/.my-credentials'
+
+    - name: Terraform Init
+      run: terraform init
+      env:
+        GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
+        # GIT_SSH_COMMAND: "echo '${{ secrets.PRIVATE_KEY }}' > id_rsa && ssh-keyscan github.com > known_hosts && chmod 600 id_rsa known_hosts && ssh -i ./id_rsa -o UserKnownHostsFile=./known_hosts"
+    
+    - name: Terraform Validate
+      run: terraform validate
+      env:
+        GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
+    
+    - name: Terraform Plan
+      run: terraform plan
+      env:
+        GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
