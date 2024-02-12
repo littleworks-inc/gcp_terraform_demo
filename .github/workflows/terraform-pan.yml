@@ -49,6 +49,6 @@ jobs:
         GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
     
     - name: Terraform Plan
-      run: terraform plan TF_LOG=DEBUG
+      run: terraform plan
       env:
         GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
