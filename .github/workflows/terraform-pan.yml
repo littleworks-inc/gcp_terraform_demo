@@ -22,10 +22,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      
-#     - uses: actions/labeler@v2
-#       with:
-#         repo-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: tfsec
       uses: aquasecurity/tfsec-action@v1.0.0
@@ -38,12 +34,6 @@ jobs:
     #   with:
     #     terraform_version: "1.1.7"
      
-    #- name: wait time
-    #  run: sleep 60
-#     - name: github configuration
-#       run : |
-#              git config --global credential.helper 'store --file ~/.my-credentials'
-
     - name: Terraform Init
       run: terraform init
       env:
