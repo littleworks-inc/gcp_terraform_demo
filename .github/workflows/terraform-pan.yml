@@ -41,7 +41,7 @@ jobs:
       run: terraform init
       env:
         GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
-        # GIT_SSH_COMMAND: "echo '${{ secrets.PRIVATE_KEY }}' > id_rsa && ssh-keyscan github.com > known_hosts && chmod 600 id_rsa known_hosts && ssh -i ./id_rsa -o UserKnownHostsFile=./known_hosts"
+        GIT_SSH_COMMAND: "echo '${{ secrets.PRIVATE_KEY }}' > id_rsa && ssh-keyscan github.com > known_hosts && chmod 600 id_rsa known_hosts && ssh -i ./id_rsa -o UserKnownHostsFile=./known_hosts"
     
     - name: Terraform Validate
       run: terraform validate
