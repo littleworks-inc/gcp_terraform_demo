@@ -25,7 +25,18 @@ jobs:
 #     - uses: actions/labeler@v2
 #       with:
 #         repo-token: ${{ secrets.GITHUB_TOKEN }}
-      
+
+    - name: tfsec
+      uses: aquasecurity/tfsec-sarif-action@v0.1.0
+      with:
+        sarif_file: tfsec.sarif    
+    
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        # Path to SARIF file relative to the root of the repository
+        sarif_file: tfsec.sarif 
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
     #   with:
