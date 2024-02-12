@@ -28,8 +28,8 @@ jobs:
       
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
-      with:
-        persist-credentials: false
+    #   with:
+    #     terraform_version: "1.1.7"
      
     #- name: wait time
     #  run: sleep 60
@@ -44,11 +44,11 @@ jobs:
         # GIT_SSH_COMMAND: "echo '${{ secrets.PRIVATE_KEY }}' > id_rsa && ssh-keyscan github.com > known_hosts && chmod 600 id_rsa known_hosts && ssh -i ./id_rsa -o UserKnownHostsFile=./known_hosts"
     
     - name: Terraform Validate
-      run: terraform validate TF_LOG=DEBUG
+      run: terraform validate 
       env:
         GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
     
     - name: Terraform Plan
-      run: terraform plan
+      run: terraform plan TF_LOG=DEBUG
       env:
         GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
