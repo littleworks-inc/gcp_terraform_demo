@@ -29,10 +29,10 @@ on:
         description: 'GCP Storage bucket folder name to store terraform state file.'
         required: true
         type: string
-      environment:
-        description: 'manual approvals in GitHub Actions with the Environments.'
-        required: true
-        type: string
+      # environment:
+      #   description: 'manual approvals in GitHub Actions with the Environments.'
+      #   required: true
+      #   type: string
     secrets:
       GOOGLE_CREDENTIALS:
         description: 'GCP Service Account Json'
