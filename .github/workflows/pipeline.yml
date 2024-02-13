@@ -24,7 +24,7 @@ jobs:
 
     Dev_Deploy:
         needs: Dev_Plan
-        uses: littleworks-inc/gcp_terraform_demo/.github/workflows/terraform-pan.yml@main
+        uses: littleworks-inc/gcp_terraform_demo/.github/workflows/terraform-apply.yml@main
         with:
             path: .
             tf_version: latest
