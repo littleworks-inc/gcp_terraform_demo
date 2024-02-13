@@ -11,7 +11,7 @@ permissions:
 
 jobs:
     Dev_Plan:
-        uses: littleworks-inc/gcp_terraform_demo/./github/workflows/terraform-pan.yml@main
+        uses: littleworks-inc/gcp_terraform_demo/.github/workflows/terraform-pan.yml@main
         with:
             path: .
             tf_version: latest
@@ -23,7 +23,7 @@ jobs:
             GOOGLE_CREDENTIALS: ${{ secrets.TF_SA }}
 
     Dev_Deploy:
-        uses: littleworks-inc/gcp_terraform_demo/./github/workflows/terraform-pan.yml@main
+        uses: littleworks-inc/gcp_terraform_demo/.github/workflows/terraform-pan.yml@main
         with:
             path: .
             tf_version: latest
