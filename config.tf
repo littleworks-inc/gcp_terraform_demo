@@ -1,4 +1,4 @@
-variable "GOOGLE_CREDENTIALS" {}
+# variable "GOOGLE_CREDENTIALS" {}
 #############################################################################
 #                            Backend Config                                 #
 #############################################################################
@@ -22,7 +22,7 @@ terraform {
 }
 
 provider "google" {
-  credentials = var.GOOGLE_CREDENTIALS
+  # credentials = var.GOOGLE_CREDENTIALS
   project     = local.project_id
   region      = local.region
 }
