@@ -47,6 +47,7 @@ jobs:
     env:
       bucket_name: ${{ inputs.gcp_backend_bucket }}
       bucket_prefix: ${{ inputs.gcp_backend_bucket_prefix }}
+      TF_VARS: ${{ inputs.tf_vars_file }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
     
     steps:
