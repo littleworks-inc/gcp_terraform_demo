@@ -46,6 +46,22 @@ jobs:
         GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
     
     - name: Terraform Plan
-      run: terraform plan
+      id: plan
+      run: terraform plan --var-file=$TF_VARS --out=plan.tfplan
+      continue-on-error: true
       env:
         GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
+
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+      
+    # - name: Compress TF Plan artifact
+    #   run: zip -r ${{ inputs.tf_key }}.zip ./*
+
+    # - name: Upload Artifact
+    #   uses: actions/upload-artifact@v3.1.3
+    #   with:
+    #     name: "${{ inputs.tf_key }}"
+    #     path: "${{ inputs.path }}/${{ inputs.tf_key }}.zip"
+    #     retention-days: 5
