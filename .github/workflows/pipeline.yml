@@ -23,6 +23,7 @@ jobs:
             GOOGLE_CREDENTIALS: ${{ secrets.TF_SA }}
 
     Dev_Deploy:
+        needs: Dev_Plan
         uses: littleworks-inc/gcp_terraform_demo/.github/workflows/terraform-pan.yml@main
         with:
             path: .

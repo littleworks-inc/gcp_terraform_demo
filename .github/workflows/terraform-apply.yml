@@ -28,7 +28,7 @@ on:
         required: true
 
 jobs:
-  build-plan:
+  build-apply:
     runs-on: ubuntu-latest
     # environment: ${{ inputs.dev_environment }}
     
