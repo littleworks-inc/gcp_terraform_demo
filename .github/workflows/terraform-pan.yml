@@ -77,7 +77,7 @@ jobs:
     
     - name: Terraform Plan
       id: plan
-      run: --var-file=$TF_VARS --out=plan.tfplan
+      run: terraform plan --var-file=$TF_VARS --out=plan.tfplan
       continue-on-error: true
       # env:
       #   GOOGLE_CREDENTIALS: $TF_Key
