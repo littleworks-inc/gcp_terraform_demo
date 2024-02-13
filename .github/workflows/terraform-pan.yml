@@ -29,6 +29,10 @@ on:
         description: 'GCP Storage bucket folder name to store terraform state file.'
         required: true
         type: string
+      environment:
+        description: 'manual approvals in GitHub Actions with the Environments.'
+        required: true
+        type: string
     secrets:
       GOOGLE_CREDENTIALS:
         description: 'GCP Service Account Json'
@@ -37,7 +41,7 @@ on:
 jobs:
   build-plan:
     runs-on: ubuntu-latest
-    # environment: ${{ inputs.dev_environment }}
+    # environment: ${{ inputs.environment }}
     
     defaults:
       run:
@@ -67,22 +71,15 @@ jobs:
      
     - name: Terraform Init
       run: terraform init --backend-config="bucket=$bucket_name" --backend-config="prefix=$bucket_prefix" --backend-config="credentials=$GOOGLE_CREDENTIALS"
-      # env:
-      #   GOOGLE_CREDENTIALS: $TF_Key
-        # GIT_SSH_COMMAND: "echo '${{ secrets.PRIVATE_KEY }}' > id_rsa && ssh-keyscan github.com > known_hosts && chmod 600 id_rsa known_hosts && ssh -i ./id_rsa -o UserKnownHostsFile=./known_hosts"
-    
+      
     - name: Terraform Validate
       run: terraform validate 
-      # env:
-      #   GOOGLE_CREDENTIALS: $TF_Key
-    
+      
     - name: Terraform Plan
       id: plan
       run: terraform plan --var-file=$TF_VARS --out=plan.tfplan
       continue-on-error: true
-      # env:
-      #   GOOGLE_CREDENTIALS: $TF_Key
-
+     
     - name: Terraform Plan Status
       if: steps.plan.outcome == 'failure'
       run: exit 1

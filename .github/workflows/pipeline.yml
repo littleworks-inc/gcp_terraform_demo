@@ -19,6 +19,7 @@ jobs:
             gcp_backend_bucket_prefix: terraform
             tf_vars_file: dev.tfvars 
             enable_TFSEC: true 
+            # environment: dev
         secrets:
             GOOGLE_CREDENTIALS: ${{ secrets.TF_SA }}
 
@@ -31,5 +32,6 @@ jobs:
             gcp_backend_bucket: gcp-gitlab-ci-demo-01
             gcp_backend_bucket_prefix: terraform
             tf_vars_file: dev.tfvars 
+            # environment: dev
         secrets:
             GOOGLE_CREDENTIALS: ${{ secrets.TF_SA }}

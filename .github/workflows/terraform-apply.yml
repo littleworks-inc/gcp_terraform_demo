@@ -22,6 +22,10 @@ on:
         description: 'GCP Storage bucket folder name to store terraform state file.'
         required: true
         type: string
+      environment:
+        description: 'manual approvals in GitHub Actions with the Environments.'
+        required: true
+        type: string
     secrets:
       GOOGLE_CREDENTIALS:
         description: 'GCP Service Account Json'
@@ -30,7 +34,7 @@ on:
 jobs:
   build-apply:
     runs-on: ubuntu-latest
-    # environment: ${{ inputs.dev_environment }}
+    # environment: ${{ inputs.environment }}
     
     defaults:
       run:
@@ -53,7 +57,6 @@ jobs:
         path: ${{ inputs.path }}
 
     - name: Decompress TF Plan artifact
-      # run: unzip ${{ inputs.bucket_prefix }}.zip
       run: echo "y" | unzip -o ${{ inputs.gcp_backend_bucket_prefix }}.zip
       
     - name: Setup Terraform
@@ -63,10 +66,6 @@ jobs:
     
     - name: Terraform Init
       run: terraform init --backend-config="bucket=$bucket_name" --backend-config="prefix=$bucket_prefix" --backend-config="credentials=$GOOGLE_CREDENTIALS"
-      # env:
-      #   GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
 
     - name: Terraform Apply
       run: terraform apply plan.tfplan 
-      # env:
-      #   GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
