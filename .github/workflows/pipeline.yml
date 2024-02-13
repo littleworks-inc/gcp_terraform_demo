@@ -11,7 +11,7 @@ permissions:
 
 jobs:
     Dev_Plan:
-        uses: ./github/workflows/terraform-pan.yml
+        uses: ././github/workflows/terraform-pan.yml
         with:
             path: .
             tf_version: latest
@@ -23,7 +23,7 @@ jobs:
             GOOGLE_CREDENTIALS: ${{ secrets.TF_SA }}
 
     Dev_Deploy:
-        uses: ./github/workflows/terraform-apply.yml
+        uses: ././github/workflows/terraform-apply.yml
         with:
             path: .
             tf_version: latest
