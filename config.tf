@@ -1,13 +1,12 @@
-# variable "GOOGLE_CREDENTIALS" {}
-#############################################################################
-#                            Backend Config                                 #
-#############################################################################
-terraform {
-  backend "gcs" {
-    bucket  = "gcp-gitlab-ci-demo-01"
-    prefix  = "terraform"
-  }
-}
+# #############################################################################
+# #                            Backend Config                                 #
+# #############################################################################
+# terraform {
+#   backend "gcs" {
+#     bucket  = "gcp-gitlab-ci-demo-01"
+#     prefix  = "terraform"
+#   }
+# }
 #############################################################################
 #                            Provider Config                                #
 #############################################################################
@@ -22,7 +21,6 @@ terraform {
 }
 
 provider "google" {
-  # credentials = var.GOOGLE_CREDENTIALS
-  project     = local.project_id
-  region      = local.region
+  project     = var.project_id
+  region      = var.region
 }

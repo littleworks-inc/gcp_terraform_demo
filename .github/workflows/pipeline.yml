@@ -1,0 +1,34 @@
+name: 'Infra_build'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+    Dev_Plan:
+        uses: ./github/workflows/terraform-pan.yml
+        with:
+            path: .
+            tf_version: latest
+            gcp_backend_bucket: gcp-gitlab-ci-demo-01
+            gcp_backend_bucket_prefix: terraform
+            tf_vars_file: dev.tfvars 
+            enable_TFSEC: true 
+        secrets:
+            GOOGLE_CREDENTIALS: ${{ secrets.TF_SA }}
+
+    Dev_Deploy:
+        uses: ./github/workflows/terraform-apply.yml
+        with:
+            path: .
+            tf_version: latest
+            gcp_backend_bucket: gcp-gitlab-ci-demo-01
+            gcp_backend_bucket_prefix: terraform
+            tf_vars_file: dev.tfvars 
+        secrets:
+            GOOGLE_CREDENTIALS: ${{ secrets.TF_SA }}

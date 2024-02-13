@@ -1,22 +1,53 @@
-name: 'Terraform-Plan'
+name: "TF_Plan"
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-
-permissions:
-  contents: read
+  workflow_call:
+    inputs:
+      path:
+        description: "Terraform Root Path"
+        required: true
+        type: string
+      tf_version:
+        description: 'Terraform Version. e.g: 1.3.0 Default=latest.'
+        required: false
+        type: string
+        default: latest
+      tf_vars_file:
+        description: 'Terraform TFVARS file name.'
+        required: true
+        type: string
+      enable_TFSEC:
+        description: 'Enables TFSEC IaC scans and code quality checks on Terraform configurations'
+        required: false
+        type: boolean
+        default: false
+      gcp_backend_bucket:
+        description: 'GCP Storage bucket name to store terraform state file.'
+        required: true
+        type: string
+      gcp_backend_bucket_prefix:
+        description: 'GCP Storage bucket folder name to store terraform state file.'
+        required: true
+        type: string
+    secrets:
+      GOOGLE_CREDENTIALS:
+        description: 'GCP Service Account Json'
+        required: true
 
 jobs:
-  terraform:
-    name: 'Terraform-Plan'
+  build-plan:
     runs-on: ubuntu-latest
+    # environment: ${{ inputs.dev_environment }}
     
     defaults:
       run:
         shell: bash
+        working-directory: ${{ inputs.path }}
+
+    env:
+      bucket_name: ${{ inputs.gcp_backend_bucket }}
+      bucket_prefix: ${{ inputs.gcp_backend_bucket_prefix }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
     
     steps:
     - name: Checkout
@@ -31,36 +62,36 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
-        terraform_version: "1.1.7"
+        terraform_version: ${{ inputs.tf_version }}
      
     - name: Terraform Init
-      run: terraform init
-      env:
-        GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
+      run: terraform init --backend-config="bucket=$bucket_name" --backend-config="prefix=$bucket_prefix" --backend-config="credentials=$GOOGLE_CREDENTIALS"
+      # env:
+      #   GOOGLE_CREDENTIALS: $TF_Key
         # GIT_SSH_COMMAND: "echo '${{ secrets.PRIVATE_KEY }}' > id_rsa && ssh-keyscan github.com > known_hosts && chmod 600 id_rsa known_hosts && ssh -i ./id_rsa -o UserKnownHostsFile=./known_hosts"
     
     - name: Terraform Validate
       run: terraform validate 
-      env:
-        GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
+      # env:
+      #   GOOGLE_CREDENTIALS: $TF_Key
     
     - name: Terraform Plan
       id: plan
-      run: terraform plan -input=false
+      run: --var-file=$TF_VARS --out=plan.tfplan
       continue-on-error: true
-      env:
-        GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
+      # env:
+      #   GOOGLE_CREDENTIALS: $TF_Key
 
     - name: Terraform Plan Status
       if: steps.plan.outcome == 'failure'
       run: exit 1
-      
-    # - name: Compress TF Plan artifact
-    #   run: zip -r ${{ inputs.tf_key }}.zip ./*
 
-    # - name: Upload Artifact
-    #   uses: actions/upload-artifact@v3.1.3
-    #   with:
-    #     name: "${{ inputs.tf_key }}"
-    #     path: "${{ inputs.path }}/${{ inputs.tf_key }}.zip"
-    #     retention-days: 5
+    - name: Compress TF Plan artifact
+      run: zip -r ${{ inputs.gcp_backend_bucket_prefix }}.zip ./*
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3.1.3
+      with:
+        name: "${{ inputs.gcp_backend_bucket_prefix }}"
+        path: "${{ inputs.path }}/${{ inputs.gcp_backend_bucket_prefix }}.zip"
+        retention-days: 5

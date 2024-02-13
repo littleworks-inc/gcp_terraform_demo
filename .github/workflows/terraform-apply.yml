@@ -1,33 +1,72 @@
-name: 'Terraform-Apply'
+on:
+  workflow_call:
+    inputs:
+      path:
+        description: "Terraform Root Path"
+        required: true
+        type: string
+      tf_version:
+        description: 'Terraform Version. e.g: 1.3.0 Default=latest.'
+        required: false
+        type: string
+        default: latest
+      tf_vars_file:
+        description: 'Terraform TFVARS file name.'
+        required: true
+        type: string
+      gcp_backend_bucket:
+        description: 'GCP Storage bucket name to store terraform state file.'
+        required: true
+        type: string
+      gcp_backend_bucket_prefix:
+        description: 'GCP Storage bucket folder name to store terraform state file.'
+        required: true
+        type: string
+    secrets:
+      GOOGLE_CREDENTIALS:
+        description: 'GCP Service Account Json'
+        required: true
 
-on: workflow_dispatch
-  
-#   workflow_run: 
-#    workflows: ["Terraform-Plan"]
-#    types:
-#     - completed
 jobs:
-  terraform:
-    name: 'Terraform-Deploy'
+  build-plan:
     runs-on: ubuntu-latest
+    # environment: ${{ inputs.dev_environment }}
     
     defaults:
       run:
         shell: bash
+        working-directory: ${{ inputs.path }}
+
+    env:
+      bucket_name: ${{ inputs.gcp_backend_bucket }}
+      bucket_prefix: ${{ inputs.gcp_backend_bucket_prefix }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
     
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+
+    - name: Download Artifact
+      uses: actions/download-artifact@v3.0.2
+      with:
+        name: ${{ inputs.gcp_backend_bucket_prefix }}
+        path: ${{ inputs.path }}
+
+    - name: Decompress TF Plan artifact
+      # run: unzip ${{ inputs.bucket_prefix }}.zip
+      run: echo "y" | unzip -o ${{ inputs.gcp_backend_bucket_prefix }}.zip
       
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ inputs.tf_version }}
     
     - name: Terraform Init
-      run: terraform init
-      env:
-        GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
+      run: terraform init --backend-config="bucket=$bucket_name" --backend-config="prefix=$bucket_prefix" --backend-config="credentials=$GOOGLE_CREDENTIALS"
+      # env:
+      #   GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
 
     - name: Terraform Apply
       run: terraform apply -auto-approve
-      env:
-        GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
+      # env:
+      #   GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
