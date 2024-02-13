@@ -67,6 +67,6 @@ jobs:
       #   GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
 
     - name: Terraform Apply
-      run: terraform apply -auto-approve
+      run: terraform apply plan.tfplan 
       # env:
       #   GOOGLE_CREDENTIALS: ${{secrets.TF_SA}}
